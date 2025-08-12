@@ -159,6 +159,28 @@ const ProductBasicDetailsForm = () => {
     </div>
   );
 
+  const renderAmortizationRadioGroup = (label, name, options) => (
+  <div className="flex flex-col px-2">
+    <label className="text-sm text-left font-medium mb-1">{label}</label>
+    <div className="flex flex-wrap gap-3 sm:gap-4">
+      {options.map(opt => (
+        <label key={opt} className="flex items-center gap-2">
+          <input
+            type="radio"
+            name={name}
+            value={opt}
+            checked={formData[name] === opt}
+            onChange={handleChange}
+            className="accent-blue-600"
+          />
+          {opt}
+        </label>
+      ))}
+    </div>
+  </div>
+);
+
+
   const renderManualInput = (label, name, suffix = '') => (
     <div className="flex flex-col px-2">
       <label className="text-sm text-left font-medium mb-1">{label}</label>
@@ -235,8 +257,8 @@ const ProductBasicDetailsForm = () => {
             </select>
           </div>
             {renderRadioGroup('Interest Rate Methodology', 'interestMethodology', ['Reducing', 'Flat', 'Hybrid'])}
-            {renderRadioGroup('Amortization Method', 'amortizationMethod', ['Regular EMI', 'Customized EMI', 'Bullet Payment'])}
-          
+            {renderAmortizationRadioGroup('Amortization Method', 'amortizationMethod', ['Regular EMI', 'Customized EMI', 'Bullet Payment'])}
+
         </div>
 
 
@@ -465,7 +487,7 @@ const ProductBasicDetailsForm = () => {
         <h2 className="text-2xl font-bold text-left mb-6 text-[#4635FE]">Product Activation</h2>
         <hr className="mb-5" />
 
-        <div className="flex flex-col-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
 
           {renderDropdown('Status of Product', 'firstNBFC', ['NBFC A', 'NBFC B', 'NBFC C'])}
         </div>
