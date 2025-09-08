@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 const ProductBasicDetailsForm = () => {
   const [formData, setFormData] = useState({
+    //product basic details
     productCategory: '',
     productName: 'Bullet Loan',
     repaymentCategory: '',
@@ -59,6 +60,8 @@ const ProductBasicDetailsForm = () => {
     //credit info and business rule engine
     creditCompany: '',
     cicProductCode: '',
+    
+    //business rule engine
     minAge: '',
     maxAge: '',
     incomeSource: '',
@@ -99,11 +102,33 @@ const ProductBasicDetailsForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form Submitted:', formData);
-    setSubmitted(true);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch("http://localhost:5000/api/loans", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData), // send your form data to backend
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      console.log("Data stored successfully:", result);
+      alert("Data stored successfully in the database!");
+      setSubmitted(true);
+    } else {
+      console.error("Error storing data:", result);
+      alert("Failed to store data. Please check the console for details.");
+    }
+  } catch (error) {
+    console.error("Request failed:", error);
+    alert("An error occurred while saving the data.");
+  }
+};
+
 
   const renderDropdown = (label, name) => (
     <div className="flex flex-col w-full px-2">
