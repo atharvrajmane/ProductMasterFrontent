@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
 const ProductBasicDetailsForm = () => {
+  console.log(
+    "Checking Environment Variable during Vercel build:",
+    process.env.REACT_APP_API_URL
+  );
+
   // --- START: DUMMY DATA FOR DROPDOWNS ---
   // Helper function to generate numeric options
   const generateNumericOptions = (start, end, step = 1) =>
@@ -59,7 +64,7 @@ const ProductBasicDetailsForm = () => {
     npaRules: "",
     writeOffRules: "",
     settlementRules: "",
-    statusOfProduct: "", 
+    statusOfProduct: "",
 
     // ROI & Repayment Settings
     rateOfInterest: "",
