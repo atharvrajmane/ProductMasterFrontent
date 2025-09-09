@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const ProductBasicDetailsForm = () => {
   console.log(
     "Checking Environment Variable during Vercel build:",
-    process.env.REACT_APP_API_URL
+    import.meta.env.VITE_API_URL
   );
 
   // --- START: DUMMY DATA FOR DROPDOWNS ---
@@ -214,7 +214,7 @@ const ProductBasicDetailsForm = () => {
     });
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const response = await fetch(`${apiUrl}/api/loans`, {
         method: "POST",
         headers: {
