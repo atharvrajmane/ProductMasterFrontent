@@ -59,7 +59,7 @@ const ProductBasicDetailsForm = () => {
     npaRules: "",
     writeOffRules: "",
     settlementRules: "",
-    statusOfProduct: "", // Added this for the final dropdown
+    statusOfProduct: "", 
 
     // ROI & Repayment Settings
     rateOfInterest: "",
@@ -124,7 +124,6 @@ const ProductBasicDetailsForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    // Your original 'poolingDates' logic for checkboxes
     if (type === "checkbox" && name === "poolingDates") {
       setFormData((prev) => ({
         ...prev,
@@ -141,8 +140,6 @@ const ProductBasicDetailsForm = () => {
     e.preventDefault();
 
     const dataToSend = { ...formData };
-
-    // --- START: FIX FOR DATA TYPE MISMATCH (EXPANDED) ---
 
     // 1. Fields that are Yes/No toggles but need to be numbers (1/0)
     const yesNoToNumericFields = [
@@ -205,21 +202,20 @@ const ProductBasicDetailsForm = () => {
       "secondNBFCShare",
     ];
 
-    // Convert any remaining empty strings in numeric fields to null
     numericFields.forEach((field) => {
       if (dataToSend[field] === "" || dataToSend[field] === undefined) {
         dataToSend[field] = null;
       }
     });
-    // --- END: FIX FOR DATA TYPE MISMATCH (EXPANDED) ---
 
     try {
-      const response = await fetch("http://localhost:5000/api/loans", {
+      const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/loans`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the sanitized data
+        body: JSON.stringify(dataToSend),
       });
 
       const result = await response.json();
