@@ -360,8 +360,8 @@ const ProductBasicDetailsForm = () => {
               type="text"
               name="productName"
               value={formData.productName}
-              readOnly
-              className="border rounded px-3 py-2 bg-gray-100"
+              onChange={handleChange}
+              className="border rounded px-3 py-2"
             />
           </div>
           {renderDropdown(
@@ -676,11 +676,11 @@ const ProductBasicDetailsForm = () => {
         </h2>
         <hr className="mb-5" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          {renderDropdown("Product Category", "productCategory", [
-            // This is a duplicate, but populating as requested
-            "Loan",
-            "Credit",
-          ])}
+          {renderDropdown(
+            "Product Category",
+            "productCategory",
+            productCategoryOptions
+          )}
           <div className="flex flex-col px-2 w-full">
             <label className="text-sm text-left font-medium mb-1">
               Name of Product
@@ -689,8 +689,8 @@ const ProductBasicDetailsForm = () => {
               type="text"
               name="productName"
               value={formData.productName}
-              readOnly
-              className="border rounded px-3 py-2 bg-gray-100"
+              onChange={handleChange}
+              className="border rounded px-3 py-2"
             />
           </div>
           {renderDropdown(
