@@ -270,7 +270,7 @@ const ProductBasicDetailsForm = () => {
               value={opt}
               checked={formData[name] === opt}
               onChange={handleChange}
-              className="accent-blue-600"
+              className="accent-blue-600 bg-white"
             />
             {opt}
           </label>
