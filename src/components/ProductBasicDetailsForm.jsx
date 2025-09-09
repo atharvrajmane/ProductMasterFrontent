@@ -245,7 +245,7 @@ const ProductBasicDetailsForm = () => {
         name={name}
         value={formData[name]}
         onChange={handleChange}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-white"
       >
         <option value="">Select</option>
 
@@ -330,7 +330,7 @@ const ProductBasicDetailsForm = () => {
         value={formData[name]}
         onChange={handleChange}
         placeholder={`Enter value${suffix}`}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-white"
       />
     </div>
   );
