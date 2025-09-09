@@ -446,7 +446,7 @@ const ProductBasicDetailsForm = () => {
               name="repaymentModeAuto"
               value={formData.repaymentModeAuto}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 bg-white"
             >
               <option value="">Select</option>
               <option value="eNACH Option 1">eNACH Option 1</option>
@@ -461,7 +461,7 @@ const ProductBasicDetailsForm = () => {
               name="repaymentModeManual"
               value={formData.repaymentModeManual}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 bg-white"
             >
               <option value="">Select</option>
               <option value="Gateway 1">Gateway 1</option>
@@ -483,7 +483,7 @@ const ProductBasicDetailsForm = () => {
               name="repaymentFrequency"
               value={formData.repaymentFrequency}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 bg-white"
             >
               <option value="">Select</option>
               <option value="Monthly">Monthly</option>
@@ -535,7 +535,7 @@ const ProductBasicDetailsForm = () => {
               name="interestAccrualMethod"
               value={formData.interestAccrualMethod}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 bg-white"
             >
               <option value="">Select</option>
               <option value="Daily">Daily</option>
@@ -606,7 +606,7 @@ const ProductBasicDetailsForm = () => {
               name="latePaymentMethod"
               value={formData.latePaymentMethod}
               onChange={handleChange}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 bg-white"
             >
               <option value="">Select</option>
               <option value="Flat">Flat</option>
