@@ -1,6 +1,40 @@
 import React, { useState } from "react";
 
 const ProductBasicDetailsForm = () => {
+  // --- START: DUMMY DATA FOR DROPDOWNS ---
+  // Helper function to generate numeric options
+  const generateNumericOptions = (start, end, step = 1) =>
+    Array.from({ length: (end - start) / step + 1 }, (_, i) =>
+      String(start + i * step)
+    );
+
+  // Options for various dropdowns
+  const productCategoryOptions = [
+    "Gold Loan",
+    "Personal Loan",
+    "Business Loan",
+    "Vehicle Loan",
+  ];
+  const repaymentCategoryOptions = [
+    "EMI",
+    "Bullet Payment",
+    "Custom Repayment",
+  ];
+  const termCategoryOptions = ["Short Term", "Medium Term", "Long Term"];
+  const tenureOptions = generateNumericOptions(1, 60); // 1 to 60 months
+  const bulletTenureOptions = generateNumericOptions(1, 24); // 1 to 24 months
+  const amountOptions = [
+    "10000",
+    "25000",
+    "50000",
+    "100000",
+    "200000",
+    "500000",
+    "1000000",
+  ];
+  const productStatusOptions = ["Active", "Inactive", "Draft"];
+  // --- END: DUMMY DATA FOR DROPDOWNS ---
+
   const [formData, setFormData] = useState({
     //product basic details
     productCategory: "",
@@ -25,6 +59,7 @@ const ProductBasicDetailsForm = () => {
     npaRules: "",
     writeOffRules: "",
     settlementRules: "",
+    statusOfProduct: "", // Added this for the final dropdown
 
     // ROI & Repayment Settings
     rateOfInterest: "",
@@ -89,6 +124,7 @@ const ProductBasicDetailsForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    // Your original 'poolingDates' logic for checkboxes
     if (type === "checkbox" && name === "poolingDates") {
       setFormData((prev) => ({
         ...prev,
@@ -104,13 +140,86 @@ const ProductBasicDetailsForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const dataToSend = { ...formData };
+
+    // --- START: FIX FOR DATA TYPE MISMATCH (EXPANDED) ---
+
+    // 1. Fields that are Yes/No toggles but need to be numbers (1/0)
+    const yesNoToNumericFields = [
+      "processingFee",
+      "gstOnProcessingFee",
+      "convenienceFee",
+      "gstOnConvenienceFee",
+      "emiBouncingCharges",
+      "gstOnEmiBouncingCharges",
+      "dailyLateCharges",
+      "gstOnDailyLateCharges",
+      "monthlyLateCharges",
+      "gstOnMonthlyLateCharges",
+    ];
+
+    yesNoToNumericFields.forEach((field) => {
+      if (dataToSend[field] === "Yes") {
+        dataToSend[field] = 1;
+      } else if (dataToSend[field] === "No") {
+        dataToSend[field] = 0;
+      }
+    });
+
+    // 2. NEW: Fields that send formatted strings but need to be pure numbers
+    const fieldsToStrip = [
+      "incomeRequirement",
+      "foir",
+      "firstNBFCShare",
+      "secondNBFCShare",
+    ];
+    fieldsToStrip.forEach((field) => {
+      if (typeof dataToSend[field] === "string") {
+        // Removes all non-digit characters (e.g., '>', '₹', ',', '%')
+        dataToSend[field] = dataToSend[field].replace(/\D/g, "");
+      }
+    });
+
+    // 3. All other fields that should be numbers
+    const numericFields = [
+      "minTenure",
+      "maxTenure",
+      "bulletTenure",
+      "minAmount",
+      "maxAmount",
+      "rateOfInterest",
+      "manualProcessingFee",
+      "manualConvenienceFee",
+      "manualEmiBouncingCharges",
+      "manualDailyLateCharges",
+      "manualMonthlyLateCharges",
+      "minAge",
+      "maxAge",
+      "incomeRequirement",
+      "foir",
+      "minCreditScore",
+      "acceptedLatePayment",
+      "minCreditEnquiries",
+      "maxCreditEnquiries",
+      "firstNBFCShare",
+      "secondNBFCShare",
+    ];
+
+    // Convert any remaining empty strings in numeric fields to null
+    numericFields.forEach((field) => {
+      if (dataToSend[field] === "" || dataToSend[field] === undefined) {
+        dataToSend[field] = null;
+      }
+    });
+    // --- END: FIX FOR DATA TYPE MISMATCH (EXPANDED) ---
+
     try {
       const response = await fetch("http://localhost:5000/api/loans", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // send your form data to backend
+        body: JSON.stringify(dataToSend), // Send the sanitized data
       });
 
       const result = await response.json();
@@ -138,7 +247,7 @@ const ProductBasicDetailsForm = () => {
         className="border rounded px-3 py-2"
       >
         <option value="">Select</option>
-        
+
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
@@ -237,7 +346,11 @@ const ProductBasicDetailsForm = () => {
         </h2>
         <hr className="mb-5"></hr>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          {renderDropdown("Product Category", "productCategory")}
+          {renderDropdown(
+            "Product Category",
+            "productCategory",
+            productCategoryOptions
+          )}
           <div className="flex flex-col w-full px-2">
             <label className="text-sm text-left font-medium mb-1">
               Name of Product
@@ -250,13 +363,37 @@ const ProductBasicDetailsForm = () => {
               className="border rounded px-3 py-2 bg-gray-100"
             />
           </div>
-          {renderDropdown("Repayment Category", "repaymentCategory")}
-          {renderDropdown("Term Category", "termCategory")}
-          {renderDropdown("Min. Loan Tenure Permitted (Month)", "minTenure")}
-          {renderDropdown("Max. Loan Tenure Permitted (Month)", "maxTenure")}
-          {renderDropdown("Bullet Loan Tenure Permitted", "bulletTenure")}
-          {renderDropdown("Min. Loan Amount Permitted", "minAmount")}
-          {renderDropdown("Max. Loan Amount Permitted", "maxAmount")}
+          {renderDropdown(
+            "Repayment Category",
+            "repaymentCategory",
+            repaymentCategoryOptions
+          )}
+          {renderDropdown("Term Category", "termCategory", termCategoryOptions)}
+          {renderDropdown(
+            "Min. Loan Tenure Permitted (Month)",
+            "minTenure",
+            tenureOptions
+          )}
+          {renderDropdown(
+            "Max. Loan Tenure Permitted (Month)",
+            "maxTenure",
+            tenureOptions
+          )}
+          {renderDropdown(
+            "Bullet Loan Tenure Permitted",
+            "bulletTenure",
+            bulletTenureOptions
+          )}
+          {renderDropdown(
+            "Min. Loan Amount Permitted",
+            "minAmount",
+            amountOptions
+          )}
+          {renderDropdown(
+            "Max. Loan Amount Permitted",
+            "maxAmount",
+            amountOptions
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
@@ -285,21 +422,8 @@ const ProductBasicDetailsForm = () => {
         </h2>
         <hr className="mb-5"></hr>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          <div className="flex flex-col px-2">
-            <label className="text-sm text-left font-medium mb-1">
-              Rate of Interest
-            </label>
-            <select
-              name="rateOfInterest"
-              value={formData.rateOfInterest}
-              onChange={handleChange}
-              className="border rounded px-3 py-2"
-            >
-              <option value="">Select</option>
-              <option value="Fixed">Fixed</option>
-              <option value="Floating">Floating</option>
-            </select>
-          </div>
+          {/* --- MODIFICATION: Changed dropdown to manual input to match DECIMAL type --- */}
+          {renderManualInput("Rate of Interest (%)", "rateOfInterest")}
           {renderRadioGroup(
             "Interest Rate Methodology",
             "interestMethodology",
@@ -382,7 +506,7 @@ const ProductBasicDetailsForm = () => {
               return (
                 <label key={day} className="flex items-center gap-1 text-sm">
                   <input
-                    type="radio"
+                    type="checkbox" // Changed back to checkbox as per original code
                     name="poolingDates"
                     value={day}
                     checked={formData.poolingDates.includes(day)}
@@ -432,7 +556,6 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg font-semibold mb-4 mr-10">
             Applicable Upfront Charges
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           {renderYesNo("Processing Fee", "processingFee")}
           {renderManualInput(
             "Manually Enter Processing Fee in %",
@@ -440,7 +563,6 @@ const ProductBasicDetailsForm = () => {
             " (%)"
           )}
           {renderYesNo("GST on Processing Fee", "gstOnProcessingFee")}
-          {/* </div> */}
         </div>
 
         {/* Convenience Fee */}
@@ -448,7 +570,6 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg text-left font-semibold mb-4 mr-10">
             Applicable Convenience Fee
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           {renderYesNo("Convenience Fee", "convenienceFee")}
           {renderManualInput(
             "Manually Enter Convenience Fee in %",
@@ -456,7 +577,6 @@ const ProductBasicDetailsForm = () => {
             " (%)"
           )}
           {renderYesNo("GST on Convenience Fee", "gstOnConvenienceFee")}
-          {/* </div> */}
         </div>
 
         {/* Incidental Charges */}
@@ -464,7 +584,6 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg text-left font-semibold mb-4 mr-10">
             Applicable Incidental Charges
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           {renderYesNo("EMI Bouncing Charges", "emiBouncingCharges")}
           {renderManualInput(
             "Manually Enter EMI Bouncing Charges",
@@ -474,7 +593,6 @@ const ProductBasicDetailsForm = () => {
             "GST on EMI Bouncing Charges",
             "gstOnEmiBouncingCharges"
           )}
-          {/* </div> */}
         </div>
 
         {/* Late Payment Charges Method */}
@@ -482,13 +600,12 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg text-left font-semibold mb-4 mr-10">
             Select Applicable Late Payment Charges Method
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           <div className="flex flex-col px-2 col-span-1">
             <select
               name="latePaymentMethod"
               value={formData.latePaymentMethod}
               onChange={handleChange}
-              className="border  rounded px-3 py-2"
+              className="border rounded px-3 py-2"
             >
               <option value="">Select</option>
               <option value="Flat">Flat</option>
@@ -496,7 +613,6 @@ const ProductBasicDetailsForm = () => {
               <option value="Monthly">Monthly</option>
             </select>
           </div>
-          {/* </div> */}
         </div>
 
         {/* Daily Late Payment Charges */}
@@ -504,7 +620,6 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg font-semibold mb-4 mr-10">
             Daily Late Payment Charges
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           {renderYesNo("Daily Late Payment Charges", "dailyLateCharges")}
           {renderManualInput(
             "Manually Enter Daily Late Payment Charges in % with compounding",
@@ -515,7 +630,6 @@ const ProductBasicDetailsForm = () => {
             "GST on Daily Late Payment Charges",
             "gstOnDailyLateCharges"
           )}
-          {/* </div> */}
         </div>
 
         {/* Monthly Late Payment Charges */}
@@ -523,7 +637,6 @@ const ProductBasicDetailsForm = () => {
           <h3 className="text-lg text-left font-semibold mb-4 mr-10">
             Monthly Late Payment Charges
           </h3>
-          {/* <div className="grid grid-cols-3 gap-10"> */}
           {renderYesNo("Monthly Late Payment Charges", "monthlyLateCharges")}
           {renderManualInput(
             "Manually Enter Monthly Late Payment Charges",
@@ -533,7 +646,6 @@ const ProductBasicDetailsForm = () => {
             "GST on Monthly Late Payment Charges",
             "gstOnMonthlyLateCharges"
           )}
-          {/* </div> */}
         </div>
         <hr className="mb-10"></hr>
 
@@ -564,6 +676,7 @@ const ProductBasicDetailsForm = () => {
         <hr className="mb-5" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
           {renderDropdown("Product Category", "productCategory", [
+            // This is a duplicate, but populating as requested
             "Loan",
             "Credit",
           ])}
@@ -579,25 +692,16 @@ const ProductBasicDetailsForm = () => {
               className="border rounded px-3 py-2 bg-gray-100"
             />
           </div>
-          {renderDropdown("Min Borrowers Age Required", "minAge", [
-            "18",
-            "19",
-            "20",
-            "21",
-          ])}
-          {renderDropdown("Max Borrowers Age Allowed", "maxAge", [
-            "55",
-            "56",
-            "57",
-            "58",
-            "59",
-            "60",
-            "61",
-            "62",
-            "63",
-            "64",
-            "65",
-          ])}
+          {renderDropdown(
+            "Min Borrowers Age Required",
+            "minAge",
+            generateNumericOptions(18, 25)
+          )}
+          {renderDropdown(
+            "Max Borrowers Age Allowed",
+            "maxAge",
+            generateNumericOptions(55, 75)
+          )}
           {renderDropdown("Borrowers Type of Income Source", "incomeSource", [
             "Salaried",
             "Self-employed",
@@ -606,28 +710,19 @@ const ProductBasicDetailsForm = () => {
           {renderDropdown(
             "Borrowers Income Requirements",
             "incomeRequirement",
-            ["> ₹25,000", "> ₹50,000", "> ₹75,000"]
+            ["> ₹25,000", "> ₹50,000", "> ₹75,000", "> ₹100,000"]
           )}
-          {renderDropdown("FOIR (%)", "foir", [
-            "40%",
-            "45%",
-            "50%",
-            "55%",
-            "60%",
-            "65%",
-            "70%",
-            "75%",
-          ])}
+          {renderDropdown(
+            "FOIR (%)",
+            "foir",
+            generateNumericOptions(40, 75, 5).map((v) => `${v}%`)
+          )}
           {renderYesNo("-1 Credit Score Eligibility", "minusOneScoreEligible")}
-          {renderDropdown("Minimum Credit Score Required", "minCreditScore", [
-            "650",
-            "665",
-            "680",
-            "690",
-            "700",
-            "730",
-            "750",
-          ])}
+          {renderDropdown(
+            "Minimum Credit Score Required",
+            "minCreditScore",
+            generateNumericOptions(600, 800, 10)
+          )}
           {renderDropdown(
             "In Between Credit Score Required",
             "inBetweenCreditScore",
@@ -642,17 +737,17 @@ const ProductBasicDetailsForm = () => {
           {renderDropdown(
             "Accepted Late Payment in Credit Score",
             "acceptedLatePayment",
-            Array.from({ length: 11 }, (_, i) => `${i}`)
+            generateNumericOptions(0, 10)
           )}
           {renderDropdown(
             "Min Credit Enquiries Accepted",
             "minCreditEnquiries",
-            ["0", "1"]
+            generateNumericOptions(0, 5)
           )}
           {renderDropdown(
             "Max Credit Enquiries Accepted",
             "maxCreditEnquiries",
-            Array.from({ length: 11 }, (_, i) => `${i}`)
+            generateNumericOptions(0, 15)
           )}
         </div>
         <hr className="mb-10"></hr>
@@ -682,7 +777,7 @@ const ProductBasicDetailsForm = () => {
           {renderDropdown(
             "Select 1st Co-Lending NBFC Share %",
             "firstNBFCShare",
-            ["10%", "20%", "30%", "40%", "50%"]
+            generateNumericOptions(10, 90, 10).map((v) => `${v}%`)
           )}
           {renderDropdown("Select 2nd Co-Lending NBFC", "secondNBFC", [
             "NBFC X",
@@ -692,7 +787,7 @@ const ProductBasicDetailsForm = () => {
           {renderDropdown(
             "Select 2nd Co-Lending NBFC Share %",
             "secondNBFCShare",
-            ["10%", "20%", "30%", "40%", "50%"]
+            generateNumericOptions(10, 90, 10).map((v) => `${v}%`)
           )}
         </div>
 
@@ -704,11 +799,11 @@ const ProductBasicDetailsForm = () => {
         <hr className="mb-5" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          {renderDropdown("Status of Product", "firstNBFC", [
-            "NBFC A",
-            "NBFC B",
-            "NBFC C",
-          ])}
+          {renderDropdown(
+            "Status of Product",
+            "statusOfProduct",
+            productStatusOptions
+          )}
         </div>
 
         <div className="mt-8 flex justify-end">
