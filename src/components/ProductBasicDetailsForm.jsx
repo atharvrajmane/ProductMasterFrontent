@@ -1,59 +1,57 @@
 import React, { useState } from "react";
 
-// NEW: 1. Structured data for loan categories and their sub-products
+// Structured data for loan categories and their sub-products
 const loanProductsData = {
-  "Personal Loan": [
-    "Medical Loan",
-    "Wedding Loan",
-    "Travel Loan",
-    "Personal Loan",
-    "Consumer Durable Loan (EMI)",
-  ],
-  "Business Loan": [
-    "Business Loan Unsecured",
-    "Business Loan Secured",
-    "Working Capital Loan",
-    "Term Loan",
-    "Machinery / Equipment Loan",
-    "Invoice Financing",
-    "Over Draft",
-  ],
-  "Home Loan": [
-    "Home Purchase Loan",
-    "Plot Loan",
-    "Home Renovation Loan",
-    "Balance Transfer / Top-Up Loan",
-  ],
-  "Loan Against Property (LAP)": [
-    "Loan Against Property (Regular LAP)",
-    "Micro Loan Against Property (Micro LAP)",
-  ],
-  "Gold Loan": ["Gold Loan"],
-  "Vehicle Loan": [
-    "Car Loan New",
-    "Car Loan Used",
-    "New Two-Wheeler Loan",
-    "Commercial Vehicle Loan",
-  ],
-  "Education Loan": ["Domestic Education Loan", "International Education Loan"],
-  "Agriculture Loan": [
-    "Crop Loan",
-    "General Loan",
-    "Tractor Loan",
-    "Kisan Credit Card",
-  ],
-  "Startup & Professional Loan": [
-    "Startup Loan",
-    "Professional Loan (Doctors, CAs, Lawyers, etc.)",
-  ],
-  "Emergency / Instant Loan": ["Bullet Loan", "Daily Basis Loan"],
+    "Personal Loan": [
+      "Medical Loan",
+      "Wedding Loan",
+      "Travel Loan",
+      "Personal Loan",
+      "Consumer Durable Loan (EMI)",
+    ],
+    "Business Loan": [
+      "Business Loan Unsecured",
+      "Business Loan Secured",
+      "Working Capital Loan",
+      "Term Loan",
+      "Machinery / Equipment Loan",
+      "Invoice Financing",
+      "Over Draft",
+    ],
+    "Home Loan": [
+      "Home Purchase Loan",
+      "Plot Loan",
+      "Home Renovation Loan",
+      "Balance Transfer / Top-Up Loan",
+    ],
+    "Loan Against Property (LAP)": [
+      "Loan Against Property (Regular LAP)",
+      "Micro Loan Against Property (Micro LAP)",
+    ],
+    "Gold Loan": ["Gold Loan"],
+    "Vehicle Loan": [
+      "Car Loan New",
+      "Car Loan Used",
+      "New Two-Wheeler Loan",
+      "Commercial Vehicle Loan",
+    ],
+    "Education Loan": ["Domestic Education Loan", "International Education Loan"],
+    "Agriculture Loan": [
+      "Crop Loan",
+      "General Loan",
+      "Tractor Loan",
+      "Kisan Credit Card",
+    ],
+    "Startup & Professional Loan": [
+      "Startup Loan",
+      "Professional Loan (Doctors, CAs, Lawyers, etc.)",
+    ],
+    "Emergency / Instant Loan": ["Bullet Loan", "Daily Basis Loan"],
 };
 
-// NEW: 2. The main category options are now derived from the keys of our data object
 const productCategoryOptions = Object.keys(loanProductsData);
 
 const ProductBasicDetailsForm = () => {
-  // --- START: DUMMY DATA FOR DROPDOWNS ---
   // Helper function to generate numeric options
   const generateNumericOptions = (start, end, step = 1) =>
     Array.from({ length: (end - start) / step + 1 }, (_, i) =>
@@ -67,24 +65,24 @@ const ProductBasicDetailsForm = () => {
     "Custom Repayment",
   ];
   const termCategoryOptions = ["Short Term", "Medium Term", "Long Term"];
-  const tenureOptions = generateNumericOptions(1, 60); // 1 to 60 months
-  const bulletTenureOptions = generateNumericOptions(1, 24); // 1 to 24 months
+  const tenureOptions = generateNumericOptions(1, 60);
+  const bulletTenureOptions = generateNumericOptions(1, 24);
+  
+  // NEW: Restored the Rupee format for amount options
   const amountOptions = [
-    "10000",
-    "25000",
-    "50000",
-    "100000",
-    "200000",
-    "500000",
-    "1000000",
+    "₹10000/-",
+    "₹25000/-",
+    "₹50000/-",
+    "₹100000/-",
+    "₹200000/-",
+    "₹500000/-",
+    "₹1000000/-",
   ];
   const productStatusOptions = ["Active", "Inactive", "Draft"];
-  // --- END: DUMMY DATA FOR DROPDOWNS ---
 
   const [formData, setFormData] = useState({
-    //product basic details
     productCategory: "",
-    productName: "", // Changed initial state from "Bullet Loan" to empty
+    productName: "",
     repaymentCategory: "",
     termCategory: "",
     minTenure: "",
@@ -106,8 +104,6 @@ const ProductBasicDetailsForm = () => {
     writeOffRules: "",
     settlementRules: "",
     statusOfProduct: "",
-
-    // ROI & Repayment Settings
     rateOfInterest: "",
     interestMethodology: "",
     amortizationMethod: "",
@@ -116,11 +112,9 @@ const ProductBasicDetailsForm = () => {
     repaymentModeOther: "",
     repaymentFrequency: "",
     advancedEmi: "",
-    poolingDates: [],
+    poolingDate: "",
     interestAccrualApplicable: "",
     interestAccrualMethod: "",
-
-    //Applicable Fees Charge Form constraints
     processingFee: "",
     manualProcessingFee: "",
     gstOnProcessingFee: "",
@@ -137,12 +131,8 @@ const ProductBasicDetailsForm = () => {
     monthlyLateCharges: "",
     manualMonthlyLateCharges: "",
     gstOnMonthlyLateCharges: "",
-
-    //credit info and business rule engine
     creditCompany: "",
     cicProductCode: "",
-
-    //business rule engine
     minAge: "",
     maxAge: "",
     incomeSource: "",
@@ -153,11 +143,10 @@ const ProductBasicDetailsForm = () => {
     inBetweenCreditScore: "",
     creditScoreEligibility: "",
     overdueAcceptable: "",
+    manualOverdueAmount: "",
     acceptedLatePayment: "",
     minCreditEnquiries: "",
     maxCreditEnquiries: "",
-
-    //sorce of funds
     sourceOfFunds: "",
     coLendingFacility: "",
     firstNBFC: "",
@@ -170,17 +159,14 @@ const ProductBasicDetailsForm = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox" && name === "poolingDates") {
-      setFormData((prev) => ({
-        ...prev,
-        poolingDates: checked
-          ? [...prev.poolingDates, value]
-          : prev.poolingDates.filter((date) => date !== value),
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const newState = { ...prev, [name]: value };
+      if (name === "overdueAcceptable" && value === "No") {
+        newState.manualOverdueAmount = "";
+      }
+      return newState;
+    });
   };
 
   const handleCategoryChange = (e) => {
@@ -190,30 +176,17 @@ const ProductBasicDetailsForm = () => {
       productCategory: category,
       productName: "",
     });
-
-    if (category) {
-      setProductNameOptions(loanProductsData[category]);
-    } else {
-      setProductNameOptions([]);
-    }
+    setProductNameOptions(category ? loanProductsData[category] : []);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const dataToSend = { ...formData };
-    // Data transformation logic...
-    console.log("Submitting Data:", dataToSend);
-    alert("Check the console to see the submitted data structure.");
+    console.log("Form Submitted:", formData);
+    alert("Form submitted! Check the console for the data.");
+    setSubmitted(true);
   };
 
-  const renderDropdown = (
-    label,
-    name,
-    value,
-    onChange,
-    options = [],
-    disabled = false
-  ) => (
+  const renderDropdown = (label, name, value, onChange, options = [], disabled = false) => (
     <div className="flex flex-col w-full px-2">
       <label className="text-sm text-left font-medium mb-1">{label}</label>
       <select
@@ -221,9 +194,7 @@ const ProductBasicDetailsForm = () => {
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className={`border rounded px-3 py-2 bg-white ${
-          disabled ? "cursor-not-allowed" : ""
-        }`}
+        className={`border rounded px-3 py-2 bg-white ${disabled ? "cursor-not-allowed" : ""}`}
       >
         <option value="">Select</option>
         {options.map((opt) => (
@@ -255,6 +226,21 @@ const ProductBasicDetailsForm = () => {
       </div>
     </div>
   );
+  
+  const renderManualInput = (label, name, suffix = "", disabled = false) => (
+    <div className="flex flex-col px-2">
+      <label className="text-sm text-left font-medium mb-1">{label}</label>
+      <input
+        type="text"
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        placeholder={`Enter value${suffix}`}
+        disabled={disabled}
+        className={`border rounded px-3 py-2 bg-white ${disabled ? "cursor-not-allowed" : ""}`}
+      />
+    </div>
+  );
 
   const renderRadioGroup = (label, name, options) => (
     <div className="flex flex-col px-2">
@@ -282,10 +268,7 @@ const ProductBasicDetailsForm = () => {
       <label className="text-sm text-left font-medium mb-1">{label}</label>
       <div className="flex flex-wrap gap-x-4 gap-y-2">
         {options.map((opt) => (
-          <label
-            key={opt}
-            className="flex items-center gap-2 whitespace-nowrap"
-          >
+          <label key={opt} className="flex items-center gap-2 whitespace-nowrap">
             <input
               type="radio"
               name={name}
@@ -301,29 +284,11 @@ const ProductBasicDetailsForm = () => {
     </div>
   );
 
-  const renderManualInput = (label, name, suffix = "") => (
-    <div className="flex flex-col px-2">
-      <label className="text-sm text-left font-medium mb-1">{label}</label>
-      <input
-        type="text"
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        placeholder={`Enter value${suffix}`}
-        className="border rounded px-3 py-2 bg-white"
-      />
-    </div>
-  );
-
   return (
-    <div className="min-h-screen w-full bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="container mx-auto bg-white rounded-lg shadow-lg w-full max-w-none">
-        {/* Main Page Header */}
         <div className="flex items-center p-4 sm:p-6 border-b border-gray-200">
-          <button
-            type="button"
-            className="text-gray-600 hover:text-gray-800 mr-4"
-          >
+          <button type="button" className="text-gray-600 hover:text-gray-800 mr-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -339,16 +304,12 @@ const ProductBasicDetailsForm = () => {
               />
             </svg>
           </button>
-          {/* NEW: Updated class to match other titles */}
-          <h1 className="text-3xl font-bold text-[#4635FE]">
+          <h1 className="text-2xl font-bold text-[#4635FE]">
             Product Master Setting
           </h1>
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="container mx-auto px-4 py-8 bg-white rounded shadow-lg w-full max-w-none"
-        >
-          {/* Product Basic Details */}
+
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6">
           <h2 className="text-2xl font-bold mb-6 text-[#4635FE] text-left">
             Product Basic Details
           </h2>
@@ -443,7 +404,6 @@ const ProductBasicDetailsForm = () => {
           </div>
           <hr className="mb-10"></hr>
 
-          {/* ROI & Repayment Settings */}
           <h2 className="text-2xl font-bold mb-6 text-[#4635FE] text-left">
             ROI & Repayment Settings
           </h2>
@@ -534,12 +494,12 @@ const ProductBasicDetailsForm = () => {
                     className="flex items-center justify-center gap-2 text-sm"
                   >
                     <input
-                      type="checkbox"
-                      name="poolingDates"
+                      type="radio"
+                      name="poolingDate"
                       value={day}
-                      checked={formData.poolingDates.includes(day)}
+                      checked={formData.poolingDate === day}
                       onChange={handleChange}
-                      className="appearance-none h-4 w-4 border border-gray-400 rounded-full checked:bg-blue-600 checked:border-transparent focus:outline-none"
+                      className="accent-blue-600"
                     />
                     {day}
                   </label>
@@ -572,12 +532,10 @@ const ProductBasicDetailsForm = () => {
           </div>
           <hr className="mb-10"></hr>
 
-          {/* Applicable Fees & Charges */}
           <h2 className="text-2xl font-bold mb-6 text-[#4635FE] text-left">
             Applicable Fees & Charges
           </h2>
           <hr className="mb-5"></hr>
-          {/* Upfront Charges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg font-semibold text-left md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
               Applicable Upfront Charges
@@ -590,7 +548,6 @@ const ProductBasicDetailsForm = () => {
             )}
             {renderYesNo("GST on Processing Fee", "gstOnProcessingFee")}
           </div>
-          {/* Convenience Fee */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg font-semibold text-left md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
               Applicable Convenience Fee
@@ -603,7 +560,6 @@ const ProductBasicDetailsForm = () => {
             )}
             {renderYesNo("GST on Convenience Fee", "gstOnConvenienceFee")}
           </div>
-          {/* Incidental Charges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg font-semibold text-left md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
               Applicable Incidental Charges
@@ -618,7 +574,6 @@ const ProductBasicDetailsForm = () => {
               "gstOnEmiBouncingCharges"
             )}
           </div>
-          {/* Late Payment Charges Method */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg text-left font-semibold mb-4 mr-10">
               Select Applicable Late Payment Charges Method
@@ -637,7 +592,6 @@ const ProductBasicDetailsForm = () => {
               </select>
             </div>
           </div>
-          {/* Daily Late Payment Charges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg font-semibold text-left md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
               Daily Late Payment Charges
@@ -653,7 +607,6 @@ const ProductBasicDetailsForm = () => {
               "gstOnDailyLateCharges"
             )}
           </div>
-          {/* Monthly Late Payment Charges */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <h3 className="text-lg font-semibold text-left md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
               Monthly Late Payment Charges
@@ -669,9 +622,7 @@ const ProductBasicDetailsForm = () => {
             )}
           </div>
           <hr className="mb-10"></hr>
-
-          {/* credit info company*/}
-          {/* Section 1: Credit Information Company */}
+          
           <h2 className="text-2xl font-bold text-left mb-6 text-[#4635FE]">
             Credit Information Company & Product Code
           </h2>
@@ -693,7 +644,6 @@ const ProductBasicDetailsForm = () => {
             )}
           </div>
 
-          {/* Section 2: Business Rule Engine */}
           <h2 className="text-2xl font-bold mb-6 text-left text-[#4635FE]">
             Business Rule Engine – Credit Approval Decision
           </h2>
@@ -740,7 +690,8 @@ const ProductBasicDetailsForm = () => {
               "incomeRequirement",
               formData.incomeRequirement,
               handleChange,
-              ["₹10,000/-", "₹15,000/-", "₹20,000/-"]
+              // NEW: Restored Rupee format here
+              ["₹10000/-", "₹15000/-", "₹20000/-"]
             )}
             {renderDropdown(
               "FOIR (%)",
@@ -775,6 +726,12 @@ const ProductBasicDetailsForm = () => {
               ["Strict", "Flexible"]
             )}
             {renderYesNo("Over Due Acceptable", "overdueAcceptable")}
+            {renderManualInput(
+              "Manual Overdue Amount",
+              "manualOverdueAmount",
+              " (₹)",
+              formData.overdueAcceptable !== "Yes"
+            )}
             {renderDropdown(
               "Accepted Late Payment in Credit Score",
               "acceptedLatePayment",
@@ -798,8 +755,7 @@ const ProductBasicDetailsForm = () => {
             )}
           </div>
           <hr className="mb-10"></hr>
-
-          {/*source of funds*/}
+          
           <h2 className="text-2xl font-bold text-left mb-6 text-[#4635FE]">
             Source of Funds
           </h2>
@@ -845,7 +801,6 @@ const ProductBasicDetailsForm = () => {
             )}
           </div>
 
-          {/* product activation*/}
           <h2 className="text-2xl font-bold text-left mb-6 text-[#4635FE]">
             Product Activation
           </h2>
@@ -879,3 +834,4 @@ const ProductBasicDetailsForm = () => {
   );
 };
 export default ProductBasicDetailsForm;
+
